@@ -1,0 +1,55 @@
+services:
+  # === Database Service ===
+  db:
+    image: mysql:8.0
+    container_name: ${COMPOSE_PROJECT_NAME}_db
+    command: '--default-authentication-plugin=mysql_native_password' # 兼容性配置：防止部分 PHP 客戶端連接 MySQL 8 認證失敗
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql # 數據持久化
+    networks:
+      - wp_network
+    healthcheck: # 健康檢查：確保數據庫真正可用後再啟動 WP
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # === WordPress Service ===
+  wordpress:
+    image: wordpress:latest
+    container_name: ${COMPOSE_PROJECT_NAME}_app
+    restart: unless-stopped
+    ports:
+      - "${WORDPRESS_PORT}:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: ${MYSQL_USER} # 使用專用帳號，而非 Root
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+    volumes:
+      - ./wp_data:/var/www/html # 持久化核心文件、主題與插件
+      # 可選：自定義 PHP 配置
+      # - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    networks:
+      - wp_network
+    depends_on:
+      db:
+        condition: service_healthy # 等待 db 通過 healthcheck
+
+# === Volumes ===
+volumes:
+  db_data:
+    driver: local
+  wp_data:
+    driver: local
+
+# === Networks ===
+networks:
+  wp_network:
+    driver: bridge
