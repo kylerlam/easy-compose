@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: evolution_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ${PATH_POSTGRES}:/var/lib/postgresql/data
+    ports:
+      - "${PORT_DB}:5432"
+    networks:
+      - evo_net
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: evolution_redis
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - ${PATH_REDIS}:/data
+    ports:
+      - "${PORT_REDIS}:6379"
+    networks:
+      - evo_net
+
+  # Evolution API
+  evolution-api:
+    image: evoapicloud/evolution-api:${EVO_API_VERSION}
+    container_name: evolution_api
+    restart: always
+    ports:
+      - "${PORT_API}:8080"
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env
+    volumes:
+      - ${PATH_INSTANCES}:/evolution/instances
+    networks:
+      - evo_net
+
+volumes:
+  postgres_data:
+  redis_data:
+  evolution_instances:
+
+networks:
+  evo_net:
+    external: true
