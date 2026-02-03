@@ -15,12 +15,11 @@
 
 ## ✨ Application List
 
-| App Name      | Category | Description                            | Quick Start                   |
-| :------------ | :------- | :------------------------------------- | :---------------------------- |
-| **WordPress** | CMS      | World's most popular blogging platform | [📂 Go](./wordpress)           |
-| **Nginx PM**  | Network  | Visual management interface for Nginx  | [📂 Go](./nginx-proxy-manager) |
-
-*(More applications to be added)*
+| Application       | Category              | Description                                                  | Quick Link             |
+| :---------------- | :-------------------- | :----------------------------------------------------------- | :--------------------- |
+| **WordPress**     | CMS                   | The world's most popular blogging and content management system. | [📂 Enter](./wordpress) |
+| **n8n**           | Workflow Automation   | A powerful low-code engine for asynchronous task processing and multi-system data integration. | [📂 Enter](./n8n)       |
+| **Evolution API** | Communication Gateway | High-performance WhatsApp API solution supporting multi-instance management and high-concurrency webhooks. | [📂 Enter](./evo-api)   |
 
 ---
 
