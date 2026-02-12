@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   # PostgreSQL Database
   postgres:
@@ -7,15 +5,16 @@ services:
     container_name: evolution_postgres
     restart: always
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      # 使用 .env 中的變數
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ${PATH_POSTGRES}:/var/lib/postgresql/data
+      - ./data/postgres_data:/var/lib/postgresql/data
     ports:
-      - "${PORT_DB}:5432"
+      - "5433:5432"
     networks:
-      - evo_net
+      - nginx_net
 
   # Redis Cache
   redis:
@@ -24,28 +23,28 @@ services:
     restart: always
     command: redis-server --appendonly yes
     volumes:
-      - ${PATH_REDIS}:/data
+      - ./data/redis_data:/data
     ports:
-      - "${PORT_REDIS}:6379"
+      - "6379:6379"
     networks:
-      - evo_net
+      - nginx_net
 
   # Evolution API
   evolution-api:
-    image: evoapicloud/evolution-api:${EVO_API_VERSION}
+    image: evoapicloud/evolution-api:v2.3.6
     container_name: evolution_api
     restart: always
     ports:
-      - "${PORT_API}:8080"
+      - "8080:8080"
     depends_on:
       - postgres
       - redis
     env_file:
       - .env
     volumes:
-      - ${PATH_INSTANCES}:/evolution/instances
+      - ./data/evolution_instances:/evolution/instances
     networks:
-      - evo_net
+      - nginx_net
 
 volumes:
   postgres_data:
@@ -53,5 +52,5 @@ volumes:
   evolution_instances:
 
 networks:
-  evo_net:
+  nginx_net:
     external: true
