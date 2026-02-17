@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/docker-library/docs/master/docker/logo.png" width="100" />
   <h1>🐳 Easy Compose Collection</h1>
   <p>
     One-click Docker Compose deployment collection for popular open-source applications.
@@ -11,55 +10,160 @@
   </p>
 </div>
 
+
+
 ---
 
 ## ✨ Application List
 
-| Application       | Category              | Description                                                  | Quick Link             |
-| :---------------- | :-------------------- | :----------------------------------------------------------- | :--------------------- |
-| **WordPress**     | CMS                   | The world's most popular blogging and content management system. | [📂 Enter](./wordpress) |
-| **n8n**           | Workflow Automation   | A powerful low-code engine for asynchronous task processing and multi-system data integration. | [📂 Enter](./n8n)       |
-| **Evolution API** | Communication Gateway | High-performance WhatsApp API solution supporting multi-instance management and high-concurrency webhooks. | [📂 Enter](./evo-api)   |
+| Application | Category | Description | Quick Link |
+| :--- | :--- | :--- | :--- |
+| **Nginx** | Reverse Proxy Gateway | Unified entry point providing HTTPS reverse proxy and SSL termination for all services. | [📂 Enter](./nginx) |
+| **WordPress** | CMS | The world's most popular blogging and content management system. | [📂 Enter](./wordpress) |
+| **Uptime Kuma** | Monitoring Dashboard | Self-hosted monitoring tool with multi-channel notification support. | [📂 Enter](./uptime-kuma) |
+| **n8n** | Workflow Automation | A powerful low-code engine for asynchronous task processing and multi-system data integration. | [📂 Enter](./n8n) |
+| **Evolution API** | Communication Gateway | High-performance WhatsApp API solution supporting multi-instance management and high-concurrency webhooks. | [📂 Enter](./evo-api) |
+| **SFTPGo** | File Transfer | SFTP / WebDAV file management service with a built-in web admin panel. | [📂 Enter](./sftpgo) |
 
 ---
 
-## ✨ Key Features
+# Quick Start
 
-Why choose this collection? We follow **DevOps best practices**:
+> A zero-to-production quick guide for deploying on a fresh VPS.
 
-- **🛡️ Data Isolation**: All application data is mounted to `./*_data` in the current directory for easy backup and migration.
-- **🔐 Security First**: Sensitive information (passwords, keys) is managed via `.env` environment variables, not hardcoded.
-- **⚡ Production Ready**: Start immediately with simple commands. No complex environment configuration required.
-- **🐳 Zero Dependency**: Only depends on Docker Engine. No need to install PHP, Python, Node.js, etc., on the host.
+---
 
-## 🛠️ Prerequisites
+## Prerequisites
 
-Before you begin, ensure your server has the following installed:
+Before you begin, prepare the following:
 
-- **Docker Engine** `20.10+`
-- **Docker Compose** `v2.0+` (Built-in `docker compose` command in newer versions)
+- [ ] A VPS with Docker Engine `20.10+` and Docker Compose `v2.0+` installed
+- [ ] Domain name resolved (A record pointing to your VPS IP)
+- [ ] SSL certificate files (`.pem` + `.key`) 💡 **Recommended**: Apply for a 15-year **Origin CA Certificate** from the Cloudflare dashboard.
 
-> 💡 **Tip**: For Windows users, it is highly recommended to use the **WSL2** backend for optimal I/O performance.
+---
 
-## 🚀 Workflow
+## Deployment Workflow
 
-All applications follow a standardized deployment process:
+### Step 1: Start the Nginx Gateway (Must Start First)
 
-1. **Enter Directory**: Select the application you need, e.g., `cd wordpress`
-2. **Initialize Config**: Copy the environment template `cp .env.example .env`
-3. **Configure Env**: Copy the template and modify the `.env` file (e.g., passwords or ports).
-4. **Start Service**: Run `docker-compose up -d`
-5. **Access**: Open your browser and visit the configured port (e.g., `http://localhost:8080`).
+Nginx's `docker-compose.yml` creates the shared network `nginx_net`, which all other services depend on.
 
-## 📂 Directory Structure
+```bash
+cd nginx
 
-For easier maintenance, this repository adopts a **Monorepo** structure:
+# Place SSL certificates in the certs/ directory
+# Certificate filenames must match the paths in conf.d/*.conf
+ls certs/
+# → your-domain.pem  your-domain.key (or other names — update paths in conf accordingly)
 
-```text
-.
-├── wordpress/              # Application A
-│   ├── docker-compose.yml  # Core orchestration file
-│   ├── .env.example        # Env variable template (Sanitized)
-│   └── README.md           # App-specific documentation
-├── nginx-proxy/            # Application B
-└── ...
+docker compose up -d
+```
+
+### Step 2: Enable the Nginx Reverse Proxy Configs You Need
+
+All reverse proxy configs are stored as `.conf.example` files — Nginx **will not load them automatically**.
+You only need to enable configs for the **services you actually use**:
+
+```bash
+# Example: enable only WordPress and Uptime Kuma
+cp nginx/conf.d/wordpress.conf.example nginx/conf.d/wordpress.conf
+cp nginx/conf.d/uptime-kuma.conf.example nginx/conf.d/uptime-kuma.conf
+```
+
+Available config templates:
+
+| Template File | Service |
+|---------|----------|
+| `wordpress.conf.example` | WordPress |
+| `uptime-kuma.conf.example` | Uptime Kuma |
+| `n8n.conf.example` | n8n |
+| `evolution_api.conf.example` | Evolution API |
+| `sftpgo.conf.example` | SFTPGo |
+
+After enabling, edit the lines marked with `⚠️` in each `.conf` (domain + certificate path):
+
+```bash
+# Quickly locate all lines that need modification
+grep -n "⚠️" nginx/conf.d/*.conf
+```
+
+Reload Nginx after making changes:
+
+```bash
+docker exec nginx_gateway nginx -s reload
+```
+
+### Step 3: Start Application Services
+
+Each application follows the same deployment process:
+
+```bash
+# Example: WordPress
+cd wordpress
+cp .env.example .env
+nano .env           # Change all values starting with CHANGE_ME_
+docker compose up -d
+```
+
+> 💡 Use `openssl rand -hex 24` to generate strong random passwords.
+
+> ⚠️ **Startup order**: Nginx must start first (it creates the `nginx_net` network). All other services can start in any order.
+
+---
+
+## ❓ FAQ
+
+### Q: Getting `network nginx_net not found` when starting a service?
+
+**A:** You haven't started Nginx yet. The `nginx_net` network is created by Nginx's `docker-compose.yml` — you must start it first:
+
+```bash
+cd nginx && docker compose up -d
+```
+
+### Q: Nginx fails to start with `host not found in upstream`?
+
+**A:** You enabled a `.conf` for a service whose container isn't running yet. Solutions:
+1. Start the corresponding service container, or
+2. Remove the unneeded `.conf` file (keep the `.conf.example`)
+
+```bash
+# Remove unneeded config
+rm nginx/conf.d/n8n.conf
+docker exec nginx_gateway nginx -s reload
+```
+
+### Q: SSL certificate filenames don't match the conf?
+
+**A:** Two options:
+
+1. Rename your certificate files to match the paths in the conf
+2. Edit `ssl_certificate` and `ssl_certificate_key` paths in `nginx/conf.d/*.conf`
+
+### Q: Do I need to restart after changing Nginx config?
+
+**A:** No need to restart the entire container — just reload the config:
+
+```bash
+docker exec nginx_gateway nginx -s reload
+```
+
+### Q: How to view logs for a service?
+
+**A:** Use the Docker logs command:
+
+```bash
+docker logs -f <container_name>
+# Example: docker logs -f n8n
+```
+
+### Q: How to update a service's image?
+
+**A:**
+
+```bash
+cd <service_directory>
+docker compose pull
+docker compose up -d
+```
