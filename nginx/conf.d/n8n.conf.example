@@ -1,0 +1,46 @@
+# 1. HTTP 自動跳轉 HTTPS
+server {
+    listen 80;
+    server_name n8n.your-domain.com;  # ⚠️ 請改成你的域名
+    return 301 https://$host$request_uri;
+}
+
+# 2. HTTPS 服務配置
+server {
+    listen 443 ssl;
+    server_name n8n.your-domain.com;  # ⚠️ 請改成你的域名
+
+    # 證書路徑
+    ssl_certificate     /etc/nginx/certs/your-domain.pem;
+    ssl_certificate_key /etc/nginx/certs/your-domain.key;
+
+    # 安全優化
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+
+    location / {
+        # 反代指向 n8n 容器
+        proxy_pass http://n8n:5678;
+
+        # === 核心配置：WebSocket + SSE 支持 (n8n 必備) ===
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
+        # ===============================================
+
+        # 標準 Header 傳遞
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # 性能優化：禁用緩衝，支持串流回應
+        proxy_buffering off;
+        proxy_cache off;
+        chunked_transfer_encoding off;
+
+        # 長連接超時（n8n 工作流可能執行很久）
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+    }
+}

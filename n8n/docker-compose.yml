@@ -31,11 +31,11 @@ services:
     volumes:
       - ${PATH_N8N_DATA}:/home/node/.n8n
     networks:
-      - n8n_net
+      - nginx_net
 
 volumes:
   n8n_data:
 
 networks:
-  n8n_net:
+  nginx_net:
     external: true

@@ -1,18 +1,18 @@
 # 1. 自動將 HTTP 重定向到 HTTPS
 server {
     listen 80;
-    server_name example-domain.com; # 這裡請填寫你的實際域名
+    server_name blog.your-domain.com; # ⚠️ 請改成你的域名
     return 301 https://$host$request_uri;
 }
 
 # 2. HTTPS 服務配置
 server {
     listen 443 ssl;
-    server_name example-domain.com; # 這裡請填寫你的實際域名
+    server_name blog.your-domain.com; # ⚠️ 請改成你的域名
 
     # 證書路徑（注意：這裡路徑要寫 Nginx 容器內部的映射路徑）
-    ssl_certificate     /etc/nginx/certs/example-domain.pem;
-    ssl_certificate_key /etc/nginx/certs/example-domain.key;
+    ssl_certificate     /etc/nginx/certs/your-domain.pem;
+    ssl_certificate_key /etc/nginx/certs/your-domain.key;
 
     # 安全優化配置
     ssl_protocols       TLSv1.2 TLSv1.3;
@@ -20,7 +20,7 @@ server {
 
     location / {
         # 反代指向 WordPress 容器名
-        proxy_pass http://my_project_app:80; 
+        proxy_pass http://wordpress_app:80;
         
         # 必要的 Header 傳遞
         proxy_set_header Host $host;
