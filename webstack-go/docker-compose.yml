@@ -1,0 +1,17 @@
+services:
+  webstack-go:
+    stdin_open: true
+    tty: true
+    restart: always
+   # ports:
+     # - 8000:8000
+    container_name: webstack-go
+    image: ch3nnn/webstack-go:latest
+    volumes:
+      - ./data/storage:/data/app/storage
+    networks:
+      - nginx_net
+
+networks:
+  nginx_net:
+    external: true

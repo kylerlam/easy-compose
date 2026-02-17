@@ -1,0 +1,31 @@
+# 1. HTTP 自動跳轉 HTTPS
+server {
+    listen 80;
+    server_name webstack.your-domain.com;  # ⚠️ 請改成你的域名
+    return 301 https://$host$request_uri;
+}
+
+# 2. HTTPS 服務配置
+server {
+    listen 443 ssl;
+    server_name webstack.your-domain.com;  # ⚠️ 請改成你的域名
+
+    # 證書路徑
+    ssl_certificate     /etc/nginx/certs/your-domain.pem;
+    ssl_certificate_key /etc/nginx/certs/your-domain.key;
+
+    # 安全優化
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+
+    location / {
+        # 反代指向 webstack-go 容器（埠號 8000）
+        proxy_pass http://webstack-go:8000;
+
+        # 標準 Header 傳遞
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
