@@ -11,7 +11,8 @@ services:
       - SFTPGO_HTTPD__BIND_PORT=8080
       - SFTPGO_WEBDAVD__BIND_PORT=8090
       - SFTPGO_WEBDAVD__ENABLED=true
-      - TZ=${TIME_ZONE}
+      - TZ=Asia/Hong_Kong
+      # SFTP_PORT=2096  # Cloudflare 開啓小云朵後可用端口：443 2053 2083 2087 2095 2096 (需在 nginx/stream.d/sftp.conf 同步修改)
     volumes:
       - ./data:/var/lib/sftpgo
       - ./config:/etc/sftpgo
