@@ -18,31 +18,21 @@ server {
     ssl_protocols       TLSv1.2 TLSv1.3;
     ssl_ciphers         HIGH:!aNULL:!MD5;
 
+    # 3. SFTPGo Web 管理 / 前端界面
     location / {
-        # 反代指向 SFTPGo Web 管理界面
         proxy_pass http://sftpgo:8080;
-
-        # 不限制上傳文件大小（SFTPGo 檔案管理需求）
         client_max_body_size 0;
-
-        # === 核心配置：WebSocket 支持 ===
+        
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $http_connection;
-        # ===============================
-
-        # 標準 Header 傳遞
+        
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
 
-        # 性能優化：禁用緩衝，支持串流傳輸
         proxy_buffering off;
-        proxy_cache off;
-        chunked_transfer_encoding off;
-
-        # 長連接超時（大檔案傳輸需要）
         proxy_read_timeout 3600s;
         proxy_send_timeout 3600s;
     }

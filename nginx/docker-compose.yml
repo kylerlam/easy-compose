@@ -6,18 +6,22 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "2096:2096"
     volumes:
       # 映射配置文件
+      - ./nginx.conf:/etc/nginx/nginx.conf
       - ./conf.d:/etc/nginx/conf.d
+      - ./stream.d:/etc/nginx/stream.d
       # 映射證書目錄
       - ./certs:/etc/nginx/certs
       # 映射日誌目錄 (可選)
       - ./logs:/var/log/nginx
+    # 👇 1. 這裡把 Nginx 加入到網絡中
     networks:
-      - nginx_net # 把 Nginx 加入到網絡中
+      - nginx_net
 
 # 👇 2. 這裡定義網絡
 networks:
   nginx_net:
-    name: nginx_net # 固定名稱，防止加上前綴
-    driver: bridge # 橋接模式 網絡管理中心
+    name: nginx_net
+    driver: bridge

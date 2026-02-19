@@ -2,11 +2,11 @@ services:
   sftpgo:
     container_name: sftpgo
     image: drakkan/sftpgo:edge-alpine
-    restart: always
-    ports:
+    restart: unless-stopped
+    # ports:
       # - "${WEB_PORT}:8080"  # Web 管理界面已註解，改由 Nginx 處理
-      - "${SFTP_PORT}:2022"   # SFTP 服務
-      - "${WEBDAV_PORT}:8090" # WebDAV 服務
+      # - "${SFTP_PORT}:2022"   # SFTP 服務 (由 Nginx Gateway 處理)
+      # - "${WEBDAV_PORT}:8090" # WebDAV 服務
     environment:
       - SFTPGO_HTTPD__BIND_PORT=8080
       - SFTPGO_WEBDAVD__BIND_PORT=8090
@@ -20,7 +20,6 @@ services:
       - nginx_net
     user: "1000:1000"
 
-# 重點修改：這裡的 networks 必須靠最左邊，不能有空格
 networks:
   nginx_net:
     external: true
