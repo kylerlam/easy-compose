@@ -1,0 +1,45 @@
+# 1. HTTP 自動跳轉 HTTPS
+server {
+    listen 80;
+    server_name sui.your-domain.com;  # ⚠️ 請改成你的域名
+    return 301 https://$host$request_uri;
+}
+
+# 2. HTTPS 服務配置
+server {
+    listen 443 ssl;
+    server_name sui.your-domain.com;  # ⚠️ 請改成你的域名
+
+    # 證書路徑
+    ssl_certificate     /etc/nginx/certs/your-domain.pem;
+    ssl_certificate_key /etc/nginx/certs/your-domain.key;
+
+    # 安全優化
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+
+    # 3. S-UI 面板
+    # 注意：s-ui 預設面板路徑通常是 /app，如果修改過請同步調整
+    location /app/ {
+        proxy_pass http://sui:2095;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # 支持 WebSocket (如果面板有用到)
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    # 4. S-UI 訂閱服務 (通過 443 端口轉發)
+    # 這樣你可以直接用 https://sui.your-domain.com/sub/ 訪問訂閱
+    location /sub/ {
+        proxy_pass http://sui:2096;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
