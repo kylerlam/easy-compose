@@ -24,6 +24,8 @@
 | **n8n** | 自动化工作流 | 强大的低代码流程引擎，实现异步任务处理与多系统间的数据整合。 | [📂 进入](./n8n) |
 | **Evolution API** | 通讯桥接器 | 高性能 WhatsApp API 解决方案，支持多实例管理与高并发 Webhook 推送。 | [📂 进入](./evo-api) |
 | **SFTPGo** | 档案传输 | 支持 SFTP / WebDAV 的档案管理服务，附带 Web 管理界面。 | [📂 进入](./sftpgo) |
+| **S-UI** | VPN 面板 | 高性能的 Sing-box / Xray 轻量级多用户管理面板。 | [📂 进入](./sui) |
+
 
 ---
 
@@ -80,6 +82,8 @@ cp nginx/conf.d/uptime-kuma.conf.example nginx/conf.d/uptime-kuma.conf
 | `n8n.conf.example` | n8n |
 | `evolution_api.conf.example` | Evolution API |
 | `sftpgo.conf.example` | SFTPGo |
+| `sui.conf.example` | S-UI |
+
 
 启用后，修改 `.conf` 中标有 `⚠️` 的行（域名 + 证书路径）：
 

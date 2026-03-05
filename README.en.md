@@ -24,6 +24,8 @@
 | **n8n** | Workflow Automation | A powerful low-code engine for asynchronous task processing and multi-system data integration. | [📂 Enter](./n8n) |
 | **Evolution API** | Communication Gateway | High-performance WhatsApp API solution supporting multi-instance management and high-concurrency webhooks. | [📂 Enter](./evo-api) |
 | **SFTPGo** | File Transfer | SFTP / WebDAV file management service with a built-in web admin panel. | [📂 Enter](./sftpgo) |
+| **S-UI** | VPN Panel | High-performance Sing-box / Xray multi-user management panel. | [📂 Enter](./sui) |
+
 
 ---
 
@@ -80,6 +82,8 @@ Available config templates:
 | `n8n.conf.example` | n8n |
 | `evolution_api.conf.example` | Evolution API |
 | `sftpgo.conf.example` | SFTPGo |
+| `sui.conf.example` | S-UI |
+
 
 After enabling, edit the lines marked with `⚠️` in each `.conf` (domain + certificate path):
 
