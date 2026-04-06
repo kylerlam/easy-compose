@@ -1,0 +1,14 @@
+# DDNS-Go — 自動更新 DNS 記錄的 DDNS 客戶端
+# Web 管理面板: http://<主機IP>:9876
+#
+# ⚠️ 使用 host 網絡模式，以便正確獲取主機的真實公網 IP。
+#    因此此服務不經過 Nginx 反代，直接通過 9876 端口訪問。
+
+services:
+  ddns-go:
+    container_name: ddns-go
+    image: jeessy/ddns-go:latest
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./data:/root/.ddns-go

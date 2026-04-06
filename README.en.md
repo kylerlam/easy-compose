@@ -24,6 +24,7 @@
 | **n8n** | Workflow Automation | A powerful low-code engine for asynchronous task processing and multi-system data integration. | [📂 Enter](./n8n) |
 | **Evolution API** | Communication Gateway | High-performance WhatsApp API solution supporting multi-instance management and high-concurrency webhooks. | [📂 Enter](./evo-api) |
 | **SFTPGo** | File Transfer | SFTP / WebDAV file management service with a built-in web admin panel. | [📂 Enter](./sftpgo) |
+| **DDNS-Go** | Dynamic DNS | Automatically detects public IP and updates DNS records. Supports Alibaba Cloud, Cloudflare, and other major providers. | [📂 Enter](./ddns-go) |
 | **S-UI** | VPN Panel | High-performance Sing-box / Xray multi-user management panel. | [📂 Enter](./sui) |
 
 

@@ -22,6 +22,7 @@
 | **n8n** | 自動化工作流 | 強大的低代碼流程引擎，實現異步任務處理與多系統間的數據整合。 | [📂 進入](./n8n) |
 | **Evolution API** | 通訊橋接器 | 高性能 WhatsApp API 解決方案，支持多實例管理與高併發 Webhook 推送。 | [📂 進入](./evo-api) |
 | **SFTPGo** | 檔案傳輸 | 支持 SFTP / WebDAV 的檔案管理服務，附帶 Web 管理界面。 | [📂 進入](./sftpgo) |
+| **DDNS-Go** | 動態 DNS | 自動獲取公網 IP 並更新 DNS 記錄，支持阿里雲、Cloudflare 等主流 DNS 服務商。 | [📂 進入](./ddns-go) |
 | **S-UI** | VPN 面板 | 高性能的 Sing-box / Xray 輕量級多用戶管理面板。 | [📂 進入](./sui) |
 
 
