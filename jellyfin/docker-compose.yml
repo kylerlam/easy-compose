@@ -1,0 +1,16 @@
+# Jellyfin — 免費開源的媒體伺服器
+# Web 管理面板: http://<主機IP>:8096
+#
+# ⚠️ 使用 host 網絡模式，以獲得最佳串流性能（DLNA 發現等）。
+#    因此此服務不經過 Nginx 反代，直接通過 8096 端口訪問。
+
+services:
+  jellyfin:
+    container_name: jellyfin
+    image: jellyfin/jellyfin:latest
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./config:/config
+      - ./cache:/cache
+      - ./media:/media
