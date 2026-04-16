@@ -1,0 +1,19 @@
+# TinyMediaManager — 媒體管理工具
+# Web GUI 使用瀏覽器訪問: http://<主機IP>:4000
+
+services:
+  tinymediamanager:
+    image: tinymediamanager/tinymediamanager:latest
+    container_name: tinymediamanager
+    restart: unless-stopped
+    ports:
+      - "4000:4000"  # Web 介面 (noVNC)
+      # - "5900:5900"  # 如果開啟了 ALLOW_DIRECT_VNC=true，可透過 VNC viewer 訪問
+    environment:
+      - TZ=Asia/Hong_Kong
+      - USER_ID=1000    # 對應你的主機用戶 ID
+      - GROUP_ID=1000   # 對應你的主機群組 ID
+      # - ALLOW_DIRECT_VNC=false
+    volumes:
+      - ./data:/data          # 設定檔、資料庫及緩存
+      - ../jellyfin/media:/media # 預設掛載 jellyfin 的 media 目錄，你可以根據需求修改
