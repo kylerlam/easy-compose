@@ -1,0 +1,18 @@
+# acme.sh — 自動化 SSL/TLS 證書申請與續期工具
+# 使用 ACME 協議（Let's Encrypt / ZeroSSL）自動簽發和管理證書。
+#
+# ⚠️ 使用前請先配置 .env 文件，填入你的 DNS API 憑證。
+#    可參考 .env.example 文件。
+
+services:
+  acme.sh:
+    image: neilpang/acme.sh
+    container_name: acme-sh
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./acme.sh:/acme.sh
+      # 映射一個目錄用來存放生成的證書，方便其他服務（如 Jellyfin、Nginx）讀取
+      - ./certs:/certs
+    command: daemon
